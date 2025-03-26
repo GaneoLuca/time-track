@@ -71,7 +71,7 @@ export default function TimeTracker() {
   const downloadCSV = () => {
     const header = "Commessa,Descrizione,Inizio,Fine,Durata\n";
     const rows = logs.map(log =>
-      \`\${log.task},\${log.description},\${log.start},\${log.end},\${log.duration}\`
+     `${log.task},${log.description},${log.start},${log.end},${log.duration}`
     ).join("\n");
     const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
