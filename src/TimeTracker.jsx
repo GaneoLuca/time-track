@@ -37,7 +37,6 @@ export default function TimeTracker() {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     return `${h}h ${m}m`;
-
   };
 
   const startTask = () => {
@@ -54,7 +53,7 @@ export default function TimeTracker() {
     const durationSec = Math.floor((endTime - startTime) / 1000);
     const newLog = {
       task: activeTask.taskName,
-      description: activeTask.description,
+      description: description,
       start: new Date(startTime).toLocaleTimeString(),
       end: endTime.toLocaleTimeString(),
       duration: formatDuration(durationSec),
@@ -71,7 +70,7 @@ export default function TimeTracker() {
   const downloadCSV = () => {
     const header = "Commessa,Descrizione,Inizio,Fine,Durata\n";
     const rows = logs.map(log =>
-     `${log.task},${log.description},${log.start},${log.end},${log.duration}`
+      `${log.task},${log.description},${log.start},${log.end},${log.duration}`
     ).join("\n");
     const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -81,6 +80,13 @@ export default function TimeTracker() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const clearLogs = () => {
+    if (confirm("Sei sicuro di voler cancellare tutti i log?")) {
+      setLogs([]);
+      localStorage.removeItem("logs");
+    }
   };
 
   const totalTime = logs.reduce((sum, log) => sum + (log.seconds || 0), 0);
@@ -95,7 +101,6 @@ export default function TimeTracker() {
         value={taskName}
         onChange={(e) => setTaskName(e.target.value)}
         className="border p-2 w-full rounded mb-2"
-        disabled={!!activeTask}
       />
 
       <textarea
@@ -104,13 +109,13 @@ export default function TimeTracker() {
         onChange={(e) => setDescription(e.target.value)}
         className="border p-2 w-full rounded mb-2"
         rows={2}
-        disabled={!!activeTask}
       />
 
       <div className="flex gap-2 mb-4">
         <Button onClick={startTask} disabled={!!activeTask || !taskName}>Start</Button>
         <Button onClick={stopTask} disabled={!activeTask}>Stop</Button>
         <Button onClick={downloadCSV} disabled={logs.length === 0}>Esporta CSV</Button>
+        <Button onClick={clearLogs} disabled={logs.length === 0}>Cancella Tutto</Button>
       </div>
 
       {activeTask && (
